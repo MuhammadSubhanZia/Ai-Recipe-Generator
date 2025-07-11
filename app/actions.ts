@@ -17,7 +17,6 @@ export async function handleBlog(url: string) {
 
   try {
     await saveFullText(url, fakeBlog);
-    console.log("✅ Saved full blog to MongoDB");
   } catch (error) {
     console.error("❌ MongoDB Save Failed:", error);
   }
