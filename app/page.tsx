@@ -1,25 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { handleBlog } from "./actions";
 import BlogForm from "@/components/ui/BlogForm";
 import SummaryCard from "@/components/ui/SummaryCard";
-import { handleBlog } from "./actions";
 
-export default function Home() {
-  const [data, setData] = useState<{ summary: string; urdu: string } | null>(null);
+export default function HomePage() {
+  const [summary, setSummary] = useState("");
+  const [urdu, setUrdu] = useState("");
 
-  const handleSubmit = async (url: string) => {
-    const result = await handleBlog(url);
-    setData(result);
+  const handleBlogSubmit = async (url: string) => {
+    try {
+      const res = await handleBlog(url);
+      setSummary(res.summary);
+      setUrdu(res.urdu);
+    } catch (err) {
+      console.error("Error handling blog:", err);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f9f9f9] to-[#e0f7fa] p-10">
-      <h1 className="text-4xl font-extrabold text-center mb-10 text-[#00796b]">
-        🧠 AI Blog Summariser
-      </h1>
-      <BlogForm onSubmit={handleSubmit} />
-      {data && <SummaryCard summary={data.summary} urdu={data.urdu} />}
+    <main className="max-w-xl mx-auto py-10">
+      <BlogForm onSubmit={handleBlogSubmit} />
+      {summary && <SummaryCard summary={summary} urdu={urdu} />}
     </main>
   );
 }

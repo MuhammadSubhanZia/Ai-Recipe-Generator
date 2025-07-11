@@ -1,32 +1,39 @@
 "use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
-export default function BlogForm({ onSubmit }: { onSubmit: (url: string) => Promise<void> }) {
+import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+interface Props {
+  onSubmit: (url: string) => Promise<void>;
+}
+
+export default function BlogForm({ onSubmit }: Props) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.startsWith("http")) {
-      setError("Please enter a valid blog URL.");
-      return;
-    }
-
-    setError("");
     setLoading(true);
-    await onSubmit(url);
+    setError("");
+    try {
+      await onSubmit(url);
+    } catch (err: unknown) {
+      console.error("Error submitting blog:", err);
+      setError("Something went wrong!");
+    }
     setLoading(false);
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        placeholder="Enter blog URL"
+        type="url"
+        placeholder="Enter blog URL..."
         value={url}
         onChange={(e) => setUrl(e.target.value)}
+        required
       />
       {error && <p className="text-red-500">{error}</p>}
       <Button type="submit" disabled={loading}>
