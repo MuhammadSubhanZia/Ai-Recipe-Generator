@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   onSubmit: (url: string) => Promise<void>;
+  loading: boolean;
 }
 
 export default function BlogForm({ onSubmit }: Props) {
@@ -27,18 +28,19 @@ export default function BlogForm({ onSubmit }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        type="url"
-        placeholder="Enter blog URL..."
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        required
-      />
-      {error && <p className="text-red-500">{error}</p>}
-      <Button type="submit" disabled={loading}>
-        {loading ? "Summarizing..." : "Summarize Blog"}
-      </Button>
-    </form>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+  <Input
+    className="border-2 border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    type="url"
+    placeholder="https://example.com/blog-post"
+    value={url}
+    onChange={(e) => setUrl(e.target.value)}
+    required
+  />
+  {error && <p className="text-sm text-red-600">{error}</p>}
+  <Button type="submit" disabled={loading}>
+    {loading ? "⏳ Summarizing..." : "⚡ Generate Summary"}
+  </Button>
+</form>
   );
 }
