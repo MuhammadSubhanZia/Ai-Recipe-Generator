@@ -14,8 +14,10 @@ export default function Home() {
   };
 
   return (
-    <main className="p-10">
-      <h1 className="text-3xl font-bold text-center mb-6">🧠 Blog Summariser</h1>
+    <main className="min-h-screen bg-gradient-to-br from-[#f9f9f9] to-[#e0f7fa] p-10">
+      <h1 className="text-4xl font-extrabold text-center mb-10 text-[#00796b]">
+        🧠 AI Blog Summariser
+      </h1>
       <BlogForm onSubmit={handleSubmit} />
       {data && <SummaryCard summary={data.summary} urdu={data.urdu} />}
     </main>
