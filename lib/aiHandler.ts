@@ -17,12 +17,16 @@ export async function summarizeAndTranslate(text: string): Promise<{ summary: st
           {
             parts: [
               {
-                text:
-                  `Summarize the following blog content in English:
+                text: `Please provide a clear and concise summary of the following blog in English, followed by its Urdu translation in a new paragraph:
 
 ${text}
 
-Then also translate that summary into polite and understandable Urdu.`,
+Format your response as:
+ENGLISH:
+<english summary>
+
+URDU:
+<urdu summary>`
               },
             ],
           },
@@ -37,16 +41,16 @@ Then also translate that summary into polite and understandable Urdu.`,
 
     const result = response.data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Gemini will return both English and Urdu summary in the same string.
-    // We'll split them based on common Urdu text markers or phrases.
-    const [englishSummary, urduTranslation] = result.split(/(?=\b(?:اردو|ترجمہ|Urdu))/i);
+    // Improved split using defined markers
+    const englishMatch = result.match(/ENGLISH:\s*([\s\S]*?)\s*(URDU:|$)/i);
+    const urduMatch = result.match(/URDU:\s*([\s\S]*)/i);
 
-    return {
-      summary: englishSummary?.trim() || "Summary not found",
-      urdu: urduTranslation?.trim() || "اردو ترجمہ دستیاب نہیں ہے",
-    };
+    const summary = englishMatch?.[1]?.trim() || "⚠️ English summary not available";
+    const urdu = urduMatch?.[1]?.trim() || "⚠️ اردو ترجمہ دستیاب نہیں ہے";
+
+    return { summary, urdu };
   } catch (error) {
-    console.error("Gemini summarization error:", error);
+    console.error("❌ Gemini summarization error:", error);
     return {
       summary: "⚠️ English summary not available",
       urdu: "⚠️ اردو ترجمہ دستیاب نہیں ہے",
