@@ -1,7 +1,6 @@
 "use server";
 
-import he from "he";
-import Mercury from "@postlight/mercury-parser";
+
 import { summarizeAndTranslate } from "@/lib/aiHandler"; // ✅ Gemini logic
 import { saveFullText } from "@/lib/mongodb";
 import { supabase } from "@/lib/supabase";
@@ -12,14 +11,17 @@ export async function handleBlog(url: string) {
   let fullText = "";
 
   try {
-    const result = await Mercury.parse(url);
-    const rawHTML = result.content || "";
-    const plainText = rawHTML.replace(/<[^>]+>/g, "").trim();
-    fullText = he.decode(plainText);
-    console.log("📄 Parsed blog content:", fullText.slice(0, 200));
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/parse`, {
+      method: "POST",
+      body: JSON.stringify({ url }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await response.json();
+    fullText = data.content || "";
   } catch (err) {
-    console.error("❌ Failed to parse blog:", err);
-    throw new Error("Failed to extract blog content");
+    console.error("❌ API Mercury parse failed:", err);
+    throw new Error("Failed to parse blog");
   }
 
   // 🔥 Gemini-powered AI summary and translation
