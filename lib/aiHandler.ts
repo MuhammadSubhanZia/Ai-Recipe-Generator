@@ -1,7 +1,11 @@
 // aiHandler.ts (Gemini-based summarization and translation)
 import axios from "axios";
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
+if (!GOOGLE_API_KEY) {
+  console.error("❌ GOOGLE_API_KEY is missing in production!");
+}
+
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent";
 
 if (!GOOGLE_API_KEY) {
