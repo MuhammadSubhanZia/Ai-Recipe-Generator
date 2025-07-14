@@ -18,7 +18,7 @@ const languages = [
   { label: "🥘 Paella Spice (Spanish)", value: "Spanish" },
   { label: "🥡 Chow Mein Crunch (Chinese)", value: "Chinese" },
   { label: "🍢 Kebab Wrap (Turkish)", value: "Turkish" },
-  { label: "🥨 Pretzel-Twist Summary (German)", value: "German" git },
+  { label: "🥨 Pretzel-Twist Summary (German)", value: "German"},
   { label: "🥟 Pelmeni Punch (Russian)", value: "Russian" },
   { label: "🍣 Sushi Slice (Japanese)", value: "Japanese" },
   { label: "🍜 Ramyeon Drama (Korean)", value: "Korean" },
