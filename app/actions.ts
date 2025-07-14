@@ -1,9 +1,9 @@
 "use server";
 
-
 import { summarizeAndTranslate } from "@/lib/aiHandler"; // ✅ Gemini logic
 import { saveFullText } from "@/lib/mongodb";
 import { supabase } from "@/lib/supabase";
+import { parseContent } from "@/lib/parseContent"; // ✅ Hybrid logic
 
 export async function handleBlog(url: string) {
   console.log("🌐 Received URL:", url);
@@ -11,18 +11,10 @@ export async function handleBlog(url: string) {
   let fullText = "";
 
   try {
-   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/parse`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ url }),
-});
-
-    const data = await response.json();
-    fullText = data.content || "";
+    fullText = await parseContent(url); // ✅ This tries direct fetch first, then /api/parse
+    if (!fullText) throw new Error("No content parsed");
   } catch (err) {
-    console.error("❌ API Mercury parse failed:", err);
+    console.error("❌ Content parsing failed:", err);
     throw new Error("Failed to parse blog");
   }
 
