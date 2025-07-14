@@ -5,24 +5,24 @@ import { saveFullText } from "@/lib/mongodb";
 import { supabase } from "@/lib/supabase";
 import { parseContent } from "@/lib/parseContent"; // ✅ Hybrid logic
 
-export async function handleBlog(url: string) {
+export async function handleBlog(url: string, language: string) {
   console.log("🌐 Received URL:", url);
+  console.log("🌐 Target Language:", language);
 
   let fullText = "";
 
   try {
-    fullText = await parseContent(url); // ✅ This tries direct fetch first, then /api/parse
+    fullText = await parseContent(url);
     if (!fullText) throw new Error("No content parsed");
   } catch (err) {
     console.error("❌ Content parsing failed:", err);
     throw new Error("Failed to parse blog");
   }
 
-  // 🔥 Gemini-powered AI summary and translation
-  const { summary, urdu } = await summarizeAndTranslate(fullText);
+  const { summary, translated } = await summarizeAndTranslate(fullText, language);
 
   console.log("📝 Summary:", summary);
-  console.log("🌙 Urdu Translation:", urdu);
+  console.log(`🌍 ${language} Translation:`, translated);
 
   try {
     await saveFullText(url, fullText);
@@ -38,5 +38,5 @@ export async function handleBlog(url: string) {
     console.error("❌ Supabase Save Failed:", error);
   }
 
-  return { summary, urdu };
+  return { summary, translated };
 }

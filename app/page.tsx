@@ -7,17 +7,17 @@ import SummaryCard from "@/components/ui/SummaryCard";
 
 export default function HomePage() {
   const [summary, setSummary] = useState("");
-  const [urdu, setUrdu] = useState("");
+  const [translated, setTranslated] = useState(""); // Generic for any language
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleBlogSubmit = async (url: string) => {
+  const handleBlogSubmit = async (url: string, language: string) => {
     setLoading(true);
     setError("");
     try {
-      const res = await handleBlog(url);
+      const res = await handleBlog(url, language); // Now sending language to server
       setSummary(res.summary);
-      setUrdu(res.urdu);
+      setTranslated(res.translated);
     } catch (err) {
       console.error("Error handling blog:", err);
       setError("❌ Something went wrong while summarizing.");
@@ -29,10 +29,10 @@ export default function HomePage() {
     <main className="min-h-screen bg-gradient-to-br from-[#1f2937] via-[#111827] to-black text-white p-6 flex items-center justify-center">
       <div className="w-full max-w-2xl bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl p-8 space-y-6 border border-white/20">
         <h1 className="text-4xl font-extrabold text-center text-blue-400 tracking-tight drop-shadow-lg">
-          📝 AI Blog Summarizer
+          🍽️ Welcome To Your AI Summary Kitchen
         </h1>
         <p className="text-center text-gray-300">
-          Paste any blog URL to instantly get a clean summary and Urdu translation.
+          Paste any blog URL to instantly get a clean summary and translation in your preferred language.
         </p>
 
         <BlogForm onSubmit={handleBlogSubmit} loading={loading} />
@@ -40,7 +40,7 @@ export default function HomePage() {
         {error && <p className="text-red-400 text-center font-semibold">{error}</p>}
 
         {summary && (
-          <SummaryCard summary={summary} urdu={urdu} />
+          <SummaryCard summary={summary} language={translated} /> // using same card
         )}
       </div>
     </main>

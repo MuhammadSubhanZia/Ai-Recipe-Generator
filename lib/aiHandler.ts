@@ -1,27 +1,21 @@
-// aiHandler.ts (Gemini-based summarization and translation)
+// aiHandler.ts
 import axios from "axios";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
 if (!GOOGLE_API_KEY) {
-  console.error("❌ GOOGLE_API_KEY is missing in production!");
-}
-
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent";
-
-if (!GOOGLE_API_KEY) {
   throw new Error("❌ GOOGLE_API_KEY is not defined in .env.local");
 }
 
-export async function summarizeAndTranslate(text: string): Promise<{ summary: string; urdu: string }> {
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent";
+
+// 🧠 Dynamic multi-language support
+export async function summarizeAndTranslate(
+  text: string,
+  language: string
+): Promise<{ summary: string; translated: string }> {
   try {
-    const response = await axios.post(
-      `${GEMINI_API_URL}?key=${GOOGLE_API_KEY}`,
-      {
-        contents: [
-          {
-            parts: [
-              {
-                text: `Please provide a clear and concise summary of the following blog in English, followed by its Urdu translation in a new paragraph:
+    const prompt = `Please provide a clear and concise summary of the following blog in English, followed by its translation in ${language} in a new paragraph do not use unnecesary dashes and keep it humanize and breif but complete keep the summary justified alignment.
 
 ${text}
 
@@ -29,8 +23,17 @@ Format your response as:
 ENGLISH:
 <english summary>
 
-URDU:
-<urdu summary>`
+${language.toUpperCase()}:
+<${language} summary>`;
+
+    const response = await axios.post(
+      `${GEMINI_API_URL}?key=${GOOGLE_API_KEY}`,
+      {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
               },
             ],
           },
@@ -45,19 +48,20 @@ URDU:
 
     const result = response.data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Improved split using defined markers
-    const englishMatch = result.match(/ENGLISH:\s*([\s\S]*?)\s*(URDU:|$)/i);
-    const urduMatch = result.match(/URDU:\s*([\s\S]*)/i);
+    const englishMatch = result.match(/ENGLISH:\s*([\s\S]*?)\s*[A-Z]+:/i);
+    const translatedMatch = result.match(
+      new RegExp(`${language.toUpperCase()}:\\s*([\\s\\S]*)`, "i")
+    );
 
     const summary = englishMatch?.[1]?.trim() || "⚠️ English summary not available";
-    const urdu = urduMatch?.[1]?.trim() || "⚠️ اردو ترجمہ دستیاب نہیں ہے";
+    const translated = translatedMatch?.[1]?.trim() || `⚠️ ${language} translation not available`;
 
-    return { summary, urdu };
+    return { summary, translated };
   } catch (error) {
     console.error("❌ Gemini summarization error:", error);
     return {
       summary: "⚠️ English summary not available",
-      urdu: "⚠️ اردو ترجمہ دستیاب نہیں ہے",
+      translated: `⚠️ ${language} translation not available`,
     };
   }
 }
