@@ -7,15 +7,19 @@ import SummaryCard from "@/components/ui/SummaryCard";
 
 export default function HomePage() {
   const [summary, setSummary] = useState("");
-  const [translated, setTranslated] = useState(""); // Generic for any language
+  const [translated, setTranslated] = useState("");
+  const [url, setUrl] = useState("");
+  const [language, setLanguage] = useState("Urdu");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleBlogSubmit = async (url: string, language: string) => {
+    setUrl(url);
+    setLanguage(language);
     setLoading(true);
     setError("");
     try {
-      const res = await handleBlog(url, language); // Now sending language to server
+      const res = await handleBlog(url, language);
       setSummary(res.summary);
       setTranslated(res.translated);
     } catch (err) {
@@ -39,8 +43,8 @@ export default function HomePage() {
 
         {error && <p className="text-red-400 text-center font-semibold">{error}</p>}
 
-        {summary && (
-          <SummaryCard summary={summary} language={translated} /> // using same card
+        {summary && translated && url && language && (
+          <SummaryCard summary={summary} translated={translated} url={url} language={language} />
         )}
       </div>
     </main>

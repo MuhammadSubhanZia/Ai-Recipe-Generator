@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 
+
 const uri = process.env.MONGODB_URI!;
 if (!uri) throw new Error("❌ MONGODB_URI is not defined");
 
@@ -24,3 +25,8 @@ export async function saveFullText(url: string, fullText: string) {
     await client.close();
   }
 }
+
+
+
+
+
