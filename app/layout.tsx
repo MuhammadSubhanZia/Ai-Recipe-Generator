@@ -3,7 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 
-<Toaster position="top-center" />
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <Toaster position="top-center" />
+    </>
+  );
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

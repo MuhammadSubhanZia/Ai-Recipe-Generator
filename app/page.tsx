@@ -4,6 +4,9 @@ import { useState } from "react";
 import { handleBlog } from "./actions";
 import BlogForm from "@/components/ui/BlogForm";
 import SummaryCard from "@/components/ui/SummaryCard";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
 
 export default function HomePage() {
   const [summary, setSummary] = useState("");
@@ -39,12 +42,26 @@ export default function HomePage() {
           Paste any blog URL to instantly get a clean summary and translation in your preferred language.
         </p>
 
+        {/* ✅ Dish Button to Shelf Page */}
+        <div className="text-center">
+          <Link href="/shelf">
+            <Button className="mt-4 bg-pink-500 hover:bg-pink-600 text-white text-lg">
+              🍱 View Your Shelf
+            </Button>
+          </Link>
+        </div>
+
         <BlogForm onSubmit={handleBlogSubmit} loading={loading} />
 
         {error && <p className="text-red-400 text-center font-semibold">{error}</p>}
 
-        {summary && translated && url && language && (
-          <SummaryCard summary={summary} translated={translated} url={url} language={language} />
+        {summary && (
+          <SummaryCard
+            summary={summary}
+            translated={translated}
+            language={language}
+            url={url}
+          />
         )}
       </div>
     </main>
